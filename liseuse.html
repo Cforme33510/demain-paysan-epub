@@ -52,6 +52,22 @@
   #viewer {
     flex: 1;
     min-width: 0;
+    position: relative;
+  }
+
+  /* Séparateur central, visible uniquement en mode double page */
+  @media (min-width: 800px) {
+    #viewer::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 1px;
+      background: var(--line);
+      z-index: 3;
+      pointer-events: none;
+    }
   }
 
   /* Flèches de navigation latérales */
@@ -159,7 +175,8 @@ const EPUB_URL = "DEMAIN_PAYSAN_EXTRACT.epub";
     rendition = book.renderTo("viewer", {
       width: "100%",
       height: "100%",
-      spread: "none",
+      spread: "auto",
+      minSpreadWidth: 800,
       flow: "paginated",
       allowScriptedContent: true
     });
