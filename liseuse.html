@@ -11,25 +11,13 @@
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
 
-<!-- Typographie de l'interface -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-
 <style>
-  /* ─────────────────────────────────────────────────────────
-     ⚙️  RÉGLAGE — remplacez l'adresse ci-dessous (dans le <script>
-         plus bas) par celle de VOTRE fichier .epub sur GitHub Pages.
-     ───────────────────────────────────────────────────────── */
-
   :root {
-    --paper:      #FBFAF7;   /* fond de lecture, papier légèrement froid */
-    --ink:        #1E2A25;   /* texte / éléments principaux */
-    --ink-soft:   #5C6B63;   /* texte secondaire, labels */
-    --line:       #E4E1D8;   /* filets, séparateurs */
-    --accent:     #3C6E5F;   /* vert profond, accent unique */
-    --accent-dim: #EAF0ED;   /* fond d'accent discret */
-    --shadow:     0 1px 2px rgba(30,42,37,.06), 0 8px 30px rgba(30,42,37,.06);
+    --paper:  #FBFAF7;   /* fond de lecture, papier légèrement froid */
+    --ink:    #1E2A25;   /* texte / éléments principaux */
+    --ink-soft: #5C6B63; /* texte secondaire */
+    --line:   #E4E1D8;   /* filets, séparateurs */
+    --accent: #3C6E5F;   /* vert profond, accent unique */
   }
 
   * { box-sizing: border-box; }
@@ -39,7 +27,7 @@
     height: 100%;
     background: var(--paper);
     color: var(--ink);
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -52,54 +40,6 @@
     margin: 0 auto;
     position: relative;
   }
-
-  /* ── Barre du haut ─────────────────────────────────────── */
-  .bar {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--line);
-    background: var(--paper);
-    z-index: 5;
-  }
-
-  .title {
-    font-family: 'Fraunces', Georgia, serif;
-    font-weight: 500;
-    font-size: 17px;
-    letter-spacing: -0.01em;
-    margin-right: auto;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .title span { color: var(--ink-soft); font-weight: 400; }
-
-  /* Boutons d'interface */
-  .btn {
-    appearance: none;
-    border: 1px solid var(--line);
-    background: var(--paper);
-    color: var(--ink);
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 500;
-    height: 34px;
-    padding: 0 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: background .15s ease, border-color .15s ease;
-  }
-  .btn:hover { background: var(--accent-dim); border-color: #CFD8D3; }
-  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .btn.icon { padding: 0; width: 34px; justify-content: center; }
-  .btn svg { width: 16px; height: 16px; display: block; }
-
-  .type-controls { display: flex; gap: 4px; }
 
   /* ── Zone de lecture ───────────────────────────────────── */
   .stage {
@@ -129,13 +69,13 @@
     z-index: 4;
     transition: color .15s ease, background .15s ease;
   }
-  .arrow:hover { color: var(--ink); background: linear-gradient(var(--accent-dim), var(--accent-dim)); }
+  .arrow:hover { color: var(--ink); background: rgba(60,110,95,0.06); }
   .arrow:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
   .arrow.prev { left: 0; }
   .arrow.next { right: 0; }
   .arrow svg { width: 22px; height: 22px; }
 
-  /* ── Barre du bas : progression + sommaire ─────────────── */
+  /* ── Barre du bas : progression ────────────────────────── */
   .foot {
     display: flex;
     align-items: center;
@@ -169,62 +109,6 @@
     text-align: right;
   }
 
-  /* ── Panneau Sommaire (table des matières) ─────────────── */
-  .toc {
-    position: absolute;
-    top: 0; bottom: 0; left: 0;
-    width: min(320px, 82%);
-    background: var(--paper);
-    border-right: 1px solid var(--line);
-    box-shadow: var(--shadow);
-    transform: translateX(-102%);
-    transition: transform .28s cubic-bezier(.4,0,.2,1);
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-  }
-  .toc.open { transform: translateX(0); }
-  .toc-head {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--line);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .toc-head h2 {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 15px;
-    margin: 0;
-    text-transform: none;
-    letter-spacing: 0.04em;
-    color: var(--ink-soft);
-  }
-  .toc-list { overflow-y: auto; padding: 8px 0; }
-  .toc-list a {
-    display: block;
-    padding: 9px 20px;
-    color: var(--ink);
-    text-decoration: none;
-    font-size: 14px;
-    line-height: 1.35;
-    border-left: 3px solid transparent;
-    transition: background .12s ease, border-color .12s ease;
-  }
-  .toc-list a:hover { background: var(--accent-dim); }
-  .toc-list a.current { border-left-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
-
-  .backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(30,42,37,.28);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .28s ease;
-    z-index: 9;
-  }
-  .backdrop.show { opacity: 1; pointer-events: auto; }
-
   /* ── États de chargement / erreur ──────────────────────── */
   .overlay {
     position: absolute;
@@ -241,48 +125,29 @@
   }
   .overlay.hidden { display: none; }
   .spinner {
-    width: 28px; height: 28px;
+    width: 26px; height: 26px;
     border: 2.5px solid var(--line);
     border-top-color: var(--accent);
     border-radius: 50%;
     animation: spin .8s linear infinite;
   }
   .overlay p { color: var(--ink-soft); font-size: 14px; margin: 0; max-width: 34ch; line-height: 1.5; }
-  .overlay .em { font-family: 'Fraunces', serif; color: var(--ink); font-size: 16px; }
+  .overlay .em { color: var(--ink); font-size: 16px; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Accessibilité : mouvement réduit */
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation-duration: .001ms !important; }
   }
 
-  /* Mobile */
   @media (max-width: 640px) {
-    .bar { padding: 12px 14px; gap: 10px; }
     .foot { padding: 10px 14px; }
     .arrow { width: 44px; }
-    .title { font-size: 15px; }
-    .type-controls .label-hide { display: none; }
   }
 </style>
 </head>
 <body>
 
 <div class="reader">
-
-  <!-- Barre supérieure -->
-  <header class="bar">
-    <button class="btn icon" id="tocBtn" aria-label="Ouvrir le sommaire" title="Sommaire">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-        <path d="M4 6h16M4 12h16M4 18h10"/>
-      </svg>
-    </button>
-    <div class="title" id="bookTitle">Chargement…</div>
-    <div class="type-controls">
-      <button class="btn icon" id="fontDown" aria-label="Réduire le texte" title="Réduire le texte">A−</button>
-      <button class="btn icon" id="fontUp" aria-label="Agrandir le texte" title="Agrandir le texte">A+</button>
-    </div>
-  </header>
 
   <!-- Scène de lecture -->
   <div class="stage">
@@ -295,18 +160,6 @@
     <button class="arrow next" id="next" aria-label="Page suivante">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
     </button>
-
-    <!-- Sommaire -->
-    <nav class="toc" id="toc" aria-label="Sommaire">
-      <div class="toc-head">
-        <h2>SOMMAIRE</h2>
-        <button class="btn icon" id="tocClose" aria-label="Fermer le sommaire">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-      <div class="toc-list" id="tocList"></div>
-    </nav>
-    <div class="backdrop" id="backdrop"></div>
 
     <!-- Chargement -->
     <div class="overlay" id="loading">
@@ -325,14 +178,7 @@
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   ⚙️  À MODIFIER — l'adresse de votre fichier .epub
-   ───────────────────────────────────────────────────────────────
-   Une fois votre .epub déposé sur GitHub Pages, mettez son adresse
-   complète ici. Exemple :
-   const EPUB_URL = "https://monpseudo.github.io/mon-depot/mon-livre.epub";
-
-   Si le fichier .epub est à côté de ce fichier HTML dans le même
-   dépôt, une adresse relative suffit : "mon-livre.epub"
+   ⚙️  Adresse de votre fichier .epub
    ═══════════════════════════════════════════════════════════════ */
 const EPUB_URL = "DEMAIN_PAYSAN_EXTRACT.epub";
 
@@ -340,17 +186,9 @@ const EPUB_URL = "DEMAIN_PAYSAN_EXTRACT.epub";
 /* ── Le reste fonctionne tout seul ───────────────────────────── */
 (function () {
   const loading   = document.getElementById('loading');
-  const viewer    = document.getElementById('viewer');
-  const titleEl   = document.getElementById('bookTitle');
-  const tocList   = document.getElementById('tocList');
-  const toc       = document.getElementById('toc');
-  const backdrop  = document.getElementById('backdrop');
   const progressBar = document.getElementById('progressBar');
   const pctEl     = document.getElementById('pct');
 
-  let fontScale = 100;
-
-  // Vérifie que epub.js a bien chargé
   if (typeof ePub === 'undefined') {
     showError("Impossible de charger le moteur de lecture.",
               "Vérifiez votre connexion, puis rechargez la page.");
@@ -363,7 +201,7 @@ const EPUB_URL = "DEMAIN_PAYSAN_EXTRACT.epub";
     rendition = book.renderTo("viewer", {
       width: "100%",
       height: "100%",
-      spread: "none",       // une seule page à la fois (idéal en iframe)
+      spread: "none",
       flow: "paginated",
       allowScriptedContent: true
     });
@@ -384,43 +222,11 @@ const EPUB_URL = "DEMAIN_PAYSAN_EXTRACT.epub";
     "a": { "color": "#3C6E5F !important" },
     "::selection": { "background": "#EAF0ED" }
   });
-  rendition.themes.fontSize(fontScale + "%");
 
-  // Affichage initial
   rendition.display().then(function () {
     loading.classList.add('hidden');
   }).catch(function () {
     showError("Le livre n'a pas pu s'afficher.", errorHint());
-  });
-
-  // Titre + sommaire une fois les métadonnées prêtes
-  book.loaded.metadata.then(function (meta) {
-    if (meta && meta.title) {
-      titleEl.innerHTML = meta.title + (meta.creator ? ' <span>· ' + meta.creator + '</span>' : '');
-      document.title = meta.title;
-    } else {
-      titleEl.textContent = 'Ma liseuse';
-    }
-  });
-
-  book.loaded.navigation.then(function (nav) {
-    const build = function (items) {
-      items.forEach(function (item) {
-        const a = document.createElement('a');
-        a.textContent = item.label.trim();
-        a.href = item.href;
-        a.dataset.href = item.href;
-        a.addEventListener('click', function (e) {
-          e.preventDefault();
-          rendition.display(item.href);
-          closeToc();
-        });
-        tocList.appendChild(a);
-        if (item.subitems && item.subitems.length) build(item.subitems);
-      });
-    };
-    if (nav.toc && nav.toc.length) build(nav.toc);
-    else tocList.innerHTML = '<a style="cursor:default;color:var(--ink-soft)">Aucun sommaire dans ce livre.</a>';
   });
 
   // Progression de lecture
@@ -431,16 +237,8 @@ const EPUB_URL = "DEMAIN_PAYSAN_EXTRACT.epub";
       const pct = Math.round(book.locations.percentageFromCfi(location.start.cfi) * 100);
       progressBar.style.width = pct + '%';
       pctEl.textContent = pct + ' %';
-      highlightToc(location.start.href);
     });
   });
-
-  function highlightToc(href) {
-    tocList.querySelectorAll('a').forEach(function (a) {
-      const match = a.dataset.href && href && href.indexOf(a.dataset.href.split('#')[0]) !== -1;
-      a.classList.toggle('current', !!match);
-    });
-  }
 
   /* ── Navigation ─────────────────────────────────────────── */
   const prev = () => rendition.prev();
@@ -452,30 +250,11 @@ const EPUB_URL = "DEMAIN_PAYSAN_EXTRACT.epub";
   document.addEventListener('keyup', function (e) {
     if (e.key === 'ArrowLeft') prev();
     if (e.key === 'ArrowRight') next();
-    if (e.key === 'Escape') closeToc();
   });
-  // Flèches clavier aussi quand le focus est dans le livre (iframe interne)
   rendition.on('keyup', function (e) {
     if (e.key === 'ArrowLeft') prev();
     if (e.key === 'ArrowRight') next();
   });
-
-  /* ── Taille du texte ────────────────────────────────────── */
-  document.getElementById('fontUp').addEventListener('click', function () {
-    fontScale = Math.min(fontScale + 10, 160);
-    rendition.themes.fontSize(fontScale + '%');
-  });
-  document.getElementById('fontDown').addEventListener('click', function () {
-    fontScale = Math.max(fontScale - 10, 70);
-    rendition.themes.fontSize(fontScale + '%');
-  });
-
-  /* ── Sommaire ───────────────────────────────────────────── */
-  function openToc()  { toc.classList.add('open'); backdrop.classList.add('show'); }
-  function closeToc() { toc.classList.remove('open'); backdrop.classList.remove('show'); }
-  document.getElementById('tocBtn').addEventListener('click', openToc);
-  document.getElementById('tocClose').addEventListener('click', closeToc);
-  backdrop.addEventListener('click', closeToc);
 
   /* ── Gestion d'erreur ───────────────────────────────────── */
   function errorHint() {
