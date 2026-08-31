@@ -234,7 +234,14 @@ const EPUB_URL = "DEMAIN_PAYSAN_EXTRACT.epub";
     return book.locations.generate(1200);
   }).then(function () {
     rendition.on('relocated', function (location) {
-      const pct = Math.round(book.locations.percentageFromCfi(location.start.cfi) * 100);
+      let pct;
+      if (location.atEnd) {
+        pct = 100;
+      } else if (location.atStart) {
+        pct = 0;
+      } else {
+        pct = Math.round(book.locations.percentageFromCfi(location.start.cfi) * 100);
+      }
       progressBar.style.width = pct + '%';
       pctEl.textContent = pct + ' %';
     });
