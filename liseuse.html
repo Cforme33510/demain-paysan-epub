@@ -204,6 +204,30 @@ const EPUB_URL = "DEMAIN_PAYSAN_EXTRACT.epub";
     showError("Le livre n'a pas pu s'afficher.", errorHint());
   });
 
+  /* ── Empêche le focus automatique d'epub.js, qui provoque un
+     défilement forcé de la page hôte (FORMAT) au chargement ────── */
+  (function () {
+    const target = document.getElementById('viewer');
+    function neutralize(frame) {
+      try {
+        if (frame && frame.contentWindow) {
+          frame.contentWindow.focus = function () {};
+        }
+      } catch (e) {}
+    }
+    const mo = new MutationObserver(function (mutations) {
+      mutations.forEach(function (m) {
+        m.addedNodes.forEach(function (node) {
+          if (node.tagName === 'IFRAME') {
+            neutralize(node);
+            node.addEventListener('load', function () { neutralize(node); });
+          }
+        });
+      });
+    });
+    mo.observe(target, { childList: true, subtree: true });
+  })();
+
   /* ── Navigation ─────────────────────────────────────────── */
   const prev = () => rendition.prev();
   const next = () => rendition.next();
