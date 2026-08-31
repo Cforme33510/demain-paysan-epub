@@ -169,6 +169,15 @@ const EPUB_URL = "DEMAIN_PAYSAN_EXTRACT.epub";
     return;
   }
 
+  /* ── Neutralise le focus() interne d'epub.js à la racine, avant
+     même l'ouverture du livre : élimine tout effet de scroll forcé
+     de la page hôte, quel que soit le moment où epub.js l'appelle ── */
+  try {
+    if (ePub.Contents && ePub.Contents.prototype) {
+      ePub.Contents.prototype.focus = function () {};
+    }
+  } catch (e) {}
+
   let book, rendition;
   try {
     book = ePub(EPUB_URL);
