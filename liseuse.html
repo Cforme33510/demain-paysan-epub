@@ -204,8 +204,19 @@ const EPUB_URL = "DEMAIN_PAYSAN_EXTRACT.epub";
     showError("Le livre n'a pas pu s'afficher.", errorHint());
   });
 
-  /* ── Empêche le focus automatique d'epub.js, qui provoque un
-     défilement forcé de la page hôte (FORMAT) au chargement ────── */
+  /* ── Empêche TOUT focus programmatique de faire défiler la page
+     hôte (FORMAT) : neutralise window.focus() et force
+     preventScroll sur tout element.focus() dans cette page ─────── */
+  (function () {
+    window.focus = function () {};
+    const nativeFocus = HTMLElement.prototype.focus;
+    HTMLElement.prototype.focus = function (opts) {
+      return nativeFocus.call(this, Object.assign({}, opts, { preventScroll: true }));
+    };
+  })();
+
+  /* ── Empêche epub.js de forcer le focus sur ses iframes internes,
+     seconde barrière pour les iframes créées dynamiquement ───────── */
   (function () {
     const target = document.getElementById('viewer');
     function neutralize(frame) {
